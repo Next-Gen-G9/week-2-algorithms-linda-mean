@@ -1,5 +1,10 @@
 #ifndef BOOK_H
 #define BOOK_H
+using namespace std;
+{
+    
+} // namespace name
+
 
 #include <string> // Required for std::string
 
@@ -15,6 +20,12 @@
 //
 struct Book {
     // Add member variables here
+   
+    int id;
+    string title;
+    string author;
+    bool isAvarible;
+
 };
 
 #endif // BOOK_H
