@@ -1,9 +1,7 @@
 #ifndef BOOK_H
 #define BOOK_H
-using namespace std;
-{
-    
-} // namespace name
+using namespace std;    
+// namespace name
 
 
 #include <string> // Required for std::string
