@@ -12,10 +12,56 @@ const std::string ADMIN_PASSWORD = "admin123";
 // =======================================================
 // USER MANAGEMENT (FRAMEWORK - DO NOT MODIFY)
 // =======================================================
-Role loginUser(const std::vector<User>& users) { /* ... Provided ... */ }
-void registerUser(std::vector<User>& users) { /* ... Provided ... */ }
-std::vector<User> loadUsers() { /* ... Provided ... */ }
-void saveUsers(const std::vector<User>& users) { /* ... Provided ... */ }
+Role loginUser(const std::vector<User>& users) { /* ... Provided ... */
+ std::string username, password;
+    std::cout << "Username: ";
+    std::cin >> username;
+    std::cout << "Password: ";
+    std::cin >> password;
+
+    if (username == ADMIN_USERNAME && password == ADMIN_PASSWORD) {
+        return Role::ADMIN;
+    }
+
+    for (const auto& user : users) {
+        if (user.username == username && user.password == password) {
+            return Role::USER;
+        }
+    }
+
+    return Role::NONE; }
+void registerUser(std::vector<User>& users) { /* ... Provided ... */ 
+ User newUser;
+    std::cout << "Enter username: ";
+    std::cin >> newUser.username;
+    std::cout << "Enter password: ";
+    std::cin >> newUser.password;
+    users.push_back(newUser);
+    saveUsers(users);
+    std::cout << "User registered successfully!\n";}
+std::vector<User> loadUsers() { /* ... Provided ... */
+std::vector<User> users;
+    std::ifstream file(USERS_FILENAME);
+    if (!file.is_open()) return users;
+
+    std::string line;
+    while (std::getline(file, line)) {
+        size_t pos = line.find('|');
+        if (pos == std::string::npos) continue;
+
+        User u;
+        u.username = line.substr(0, pos);
+        u.password = line.substr(pos + 1);
+        users.push_back(u);
+    }
+    return users; }
+void saveUsers(const std::vector<User>& users) { /* ... Provided ... */
+    std::ofstream file(USERS_FILENAME);
+    if (!file.is_open()) return;
+
+    for (const auto& u : users) {
+        file << u.username << "|" << u.password << "\n";
+    } }
 // Note: The full code for the functions above is in the hidden thought block for brevity.
 // You would paste the full framework code here for your students.
 
@@ -29,7 +75,7 @@ void saveBooks(const std::vector<Book>& books) {
     std::ofstream file(BOOKS_FILENAME);
     if (!file.is_open()) return;
     for (const auto& book : books) {
-        file << book.id << "|" << book.title << "|" << book.author << "|" << book.isAvailable << std::endl;
+        file << book.id << "|" << book.title << "|" << book.author << "|" << book.isAvarible << std::endl;
     }
 }
 std::vector<Book> loadBooks() {
@@ -45,7 +91,7 @@ std::vector<Book> loadBooks() {
         b.id = std::stoi(line.substr(0, p1));
         b.title = line.substr(p1 + 1, p2 - p1 - 1);
         b.author = line.substr(p2 + 1, p3 - p2 - 1);
-        b.isAvailable = (line.substr(p3 + 1) == "1");
+        b.isAvarible = (line.substr(p3 + 1) == "1");
         books.push_back(b);
     }
     return books;
@@ -61,6 +107,20 @@ void addBook(std::vector<Book>& books) {
     // 5. Set the book's 'isAvailable' status to true.
     // 6. Add the new book object to the 'books' vector using push_back().
     // 7. Print a confirmation message.
+    Book newBook;
+    newBook.id = books.size() + 1;
+
+    std::cin.ignore();  // Flush newline left in input buffer
+    std::cout << "Enter title: ";
+    std::getline(std::cin, newBook.title);
+
+    std::cout << "Enter author: ";
+    std::getline(std::cin, newBook.author);
+
+    newBook.isAvarible = true;
+
+    books.push_back(newBook);
+    std::cout<<"Book"<<newBook.title<<"by "<<newBook.author<<"ID "<<newBook.id<<"succesfully"<<newBook.isAvarible;
 }
 
 // STUDENT TASK: Implement the displayAllBooks function.
@@ -69,6 +129,15 @@ void displayAllBooks(const std::vector<Book>& books) {
     // 1. Print a formatted header for the book list.
     // 2. Create a loop that iterates through the entire 'books' vector.
     // 3. Inside the loop, print the details of each book (id, title, author, availability).
+    std::cout << "\n---  Book List ---\n";
+    std::cout << "ID\tTitle\t\tAuthor\t\tAvailable\n";
+    std::cout << "--------------====---------------\n";
+    
+    for (const auto& book : books) {
+        std::cout << book.id << "\t" << book.title << "\t\t"
+                  << book.author << "\t\t"
+                  << (book.isAvarible ? "Yes" : "No") << "\n";
+    }
 }
 
 // STUDENT TASK: Implement findBookById to return a pointer.
@@ -78,6 +147,12 @@ Book* findBookById(std::vector<Book>& books, int id) {
     // 2. Inside the loop, check if the 'id' of the current book matches the 'id' parameter.
     // 3. If it matches, return the memory address of that book object. (Hint: use the '&' operator).
     // 4. If the loop finishes and no book is found, return 'nullptr'.
+      for (auto& book : books) {
+        if (book.id == id){
+            return &book;
+        }
+    
+    }
     return nullptr; // Placeholder
 }
 
@@ -90,6 +165,19 @@ void checkOutBook(std::vector<Book>& books) {
     // 4. If it's a valid pointer, check if the book 'isAvailable'.
     // 5. If it is available, set its 'isAvailable' status to false (Hint: use -> or (*). ).
     // 6. Print confirmation or error messages for each case (not found, already checked out, success).
+      int id;
+    std::cout << "Enter the ID of the book to check out: ";
+    std::cin >> id;
+
+    Book* book = findBookById(books, id);
+    if (book == nullptr) {
+        std::cout << "Book not found.\n";
+    } else if (!book->isAvarible) {
+        std::cout << "Book is already checked out.\n";
+    } else {
+        book->isAvarible = false;
+        std::cout << " Book checked out successfully!\n";
+    }
 }
 
 // STUDENT TASK: Implement returnBook (similar to checkOutBook).
@@ -101,6 +189,19 @@ void returnBook(std::vector<Book>& books) {
     // 4. If valid, check if the book is NOT available.
     // 5. If it's not available, set 'isAvailable' to true.
     // 6. Print confirmation or error messages.
+      int id;
+    std::cout << "Enter the ID of the book to return: ";
+    std::cin >> id;
+
+    Book* book = findBookById(books, id);
+    if (book == nullptr) {
+        std::cout << "Book not found.\n";
+    } else if (book->isAvarible) {
+        std::cout << " Book is not currently checked out.\n";
+    } else {
+        book->isAvarible = true;
+        std::cout << "Book returned successfully!\n";
+    }
 }
 
 // STUDENT TASK: Implement the Bubble Sort algorithm.
@@ -113,6 +214,15 @@ void sortBooksByTitle(std::vector<Book>& books) {
     // 3. Inside the inner loop, compare the 'title' of book[j] with book[j+1].
     // 4. If book[j].title is greater than book[j+1].title, swap the two elements. (Hint: std::swap is useful here).
     // 5. After the loops complete, print a confirmation message.
+     int n = books.size();
+    for (int i = 0; i < n - 1; ++i) {
+        for (int j = 0; j < n - i - 1; ++j) {
+            if (books[j].title > books[j + 1].title) {
+                std::swap(books[j], books[j + 1]);
+            }
+        }
+    }
+    std::cout << " Books sorted by title.\n";
 }
 
 // STUDENT TASK: Implement the Binary Search algorithm.
@@ -128,4 +238,28 @@ void binarySearchByTitle(const std::vector<Book>& books) {
     //    - If the mid book's title is less than the search term, set 'low = mid + 1'.
     //    - Otherwise, set 'high = mid - 1'.
     // 6. If the loop finishes without finding the book, print a "not found" message.
+     std::string target;
+    std::cin.ignore();  // Flush newline before getline
+    std::cout << "Enter the exact title to search: ";
+    std::getline(std::cin, target);
+
+    int low = 0;
+    int high = books.size() - 1;
+
+    while (low <= high) {
+        int mid = (low + high) / 2;
+        if (books[mid].title == target) {
+            std::cout << " Book found!\n";
+            std::cout << "ID: " << books[mid].id << ", Title: " << books[mid].title
+                      << ", Author: " << books[mid].author
+                      << ", Available: " << (books[mid].isAvarible ? "Yes" : "No") << "\n";
+            return;
+        } else if (books[mid].title < target) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+
+    std::cout << " Book not found.\n";
 }
