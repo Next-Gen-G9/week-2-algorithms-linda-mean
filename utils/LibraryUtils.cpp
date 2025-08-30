@@ -131,7 +131,8 @@ void displayAllBooks(const std::vector<Book>& books) {
     // 3. Inside the loop, print the details of each book (id, title, author, availability).
     std::cout << "\n---  Book List ---\n";
     std::cout << "ID\tTitle\t\tAuthor\t\tAvailable\n";
-    std::cout << "----------------------------------------------\n";
+    std::cout << "--------------====---------------\n";
+    
     for (const auto& book : books) {
         std::cout << book.id << "\t" << book.title << "\t\t"
                   << book.author << "\t\t"
