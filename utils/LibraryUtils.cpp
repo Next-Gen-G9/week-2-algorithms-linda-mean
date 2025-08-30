@@ -29,7 +29,7 @@ void saveBooks(const std::vector<Book>& books) {
     std::ofstream file(BOOKS_FILENAME);
     if (!file.is_open()) return;
     for (const auto& book : books) {
-        file << book.id << "|" << book.title << "|" << book.author << "|" << book.isAvailable << std::endl;
+        file << book.id << "|" << book.title << "|" << book.author << "|" << book.isAvarible << std::endl;
     }
 }
 std::vector<Book> loadBooks() {
@@ -74,7 +74,7 @@ void addBook(std::vector<Book>& books) {
     newBook.isAvarible = true;
 
     books.push_back(newBook);
-    std::cout << " Book added successfully!\n";
+    std::cout<<"Book"<<newBook.title<<"by "<<newBook.author<<"ID "<<newBook.id<<"succesfully"<<newBook.isAvarible;
 }
 
 // STUDENT TASK: Implement the displayAllBooks function.
@@ -101,8 +101,10 @@ Book* findBookById(std::vector<Book>& books, int id) {
     // 3. If it matches, return the memory address of that book object. (Hint: use the '&' operator).
     // 4. If the loop finishes and no book is found, return 'nullptr'.
       for (auto& book : books) {
-        if (book.id == id)
+        if (book.id == id){
             return &book;
+        }
+    
     }
     return nullptr; // Placeholder
 }
