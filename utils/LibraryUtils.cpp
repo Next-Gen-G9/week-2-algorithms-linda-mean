@@ -12,10 +12,56 @@ const std::string ADMIN_PASSWORD = "admin123";
 // =======================================================
 // USER MANAGEMENT (FRAMEWORK - DO NOT MODIFY)
 // =======================================================
-Role loginUser(const std::vector<User>& users) { /* ... Provided ... */ }
-void registerUser(std::vector<User>& users) { /* ... Provided ... */ }
-std::vector<User> loadUsers() { /* ... Provided ... */ }
-void saveUsers(const std::vector<User>& users) { /* ... Provided ... */ }
+Role loginUser(const std::vector<User>& users) { /* ... Provided ... */
+ std::string username, password;
+    std::cout << "Username: ";
+    std::cin >> username;
+    std::cout << "Password: ";
+    std::cin >> password;
+
+    if (username == ADMIN_USERNAME && password == ADMIN_PASSWORD) {
+        return Role::ADMIN;
+    }
+
+    for (const auto& user : users) {
+        if (user.username == username && user.password == password) {
+            return Role::USER;
+        }
+    }
+
+    return Role::NONE; }
+void registerUser(std::vector<User>& users) { /* ... Provided ... */ 
+ User newUser;
+    std::cout << "Enter username: ";
+    std::cin >> newUser.username;
+    std::cout << "Enter password: ";
+    std::cin >> newUser.password;
+    users.push_back(newUser);
+    saveUsers(users);
+    std::cout << "User registered successfully!\n";}
+std::vector<User> loadUsers() { /* ... Provided ... */
+std::vector<User> users;
+    std::ifstream file(USERS_FILENAME);
+    if (!file.is_open()) return users;
+
+    std::string line;
+    while (std::getline(file, line)) {
+        size_t pos = line.find('|');
+        if (pos == std::string::npos) continue;
+
+        User u;
+        u.username = line.substr(0, pos);
+        u.password = line.substr(pos + 1);
+        users.push_back(u);
+    }
+    return users; }
+void saveUsers(const std::vector<User>& users) { /* ... Provided ... */
+    std::ofstream file(USERS_FILENAME);
+    if (!file.is_open()) return;
+
+    for (const auto& u : users) {
+        file << u.username << "|" << u.password << "\n";
+    } }
 // Note: The full code for the functions above is in the hidden thought block for brevity.
 // You would paste the full framework code here for your students.
 
